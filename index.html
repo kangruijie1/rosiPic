@@ -1,356 +1,346 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ROSI图片浏览器</title>
-  <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ROSI图片浏览器</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-      background: #f5f5f5;
-    }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: #f5f5f5;
+        }
 
-    .header {
-      background: white;
-      padding: 20px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-      position: sticky;
-      top: 0;
-      z-index: 100;
-    }
+        .header {
+            background: white;
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
 
-    .filters {
-      max-width: 1200px;
-      margin: 0 auto;
-    }
+        .filters {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
 
-    .filter-section {
-      margin-bottom: 15px;
-    }
+        .filter-section {
+            margin-bottom: 15px;
+        }
 
-    .filter-label {
-      font-weight: 600;
-      margin-bottom: 10px;
-      display: block;
-      color: #333;
-    }
+        .filter-label {
+            font-weight: 600;
+            margin-bottom: 10px;
+            display: block;
+            color: #333;
+        }
 
-    .year-slider-container {
-      position: relative;
-      overflow-x: auto;
-      overflow-y: hidden;
-      white-space: nowrap;
-      padding: 10px 0;
-      -webkit-overflow-scrolling: touch;
-    }
+        .year-slider-container {
+            position: relative;
+            overflow-x: auto;
+            overflow-y: hidden;
+            white-space: nowrap;
+            padding: 10px 0;
+            -webkit-overflow-scrolling: touch;
+        }
 
-    .year-slider {
-      display: inline-flex;
-      gap: 10px;
-      padding: 0 10px;
-    }
+        .year-slider {
+            display: inline-flex;
+            gap: 10px;
+            padding: 0 10px;
+        }
 
-    .year-btn {
-      padding: 8px 20px;
-      border: 2px solid #ddd;
-      background: white;
-      border-radius: 20px;
-      cursor: pointer;
-      transition: all 0.3s;
-      font-size: 14px;
-      white-space: nowrap;
-    }
+        .year-btn {
+            padding: 8px 20px;
+            border: 2px solid #ddd;
+            background: white;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 14px;
+            white-space: nowrap;
+        }
 
-    .year-btn:hover {
-      border-color: #1890ff;
-    }
+        .year-btn:hover {
+            border-color: #1890ff;
+        }
 
-    .year-btn.active {
-      background: #1890ff;
-      color: white;
-      border-color: #1890ff;
-    }
+        .year-btn.active {
+            background: #1890ff;
+            color: white;
+            border-color: #1890ff;
+        }
 
-    .sort-buttons {
-      display: flex;
-      gap: 10px;
-    }
+        .sort-buttons {
+            display: flex;
+            gap: 10px;
+        }
 
-    .sort-btn {
-      padding: 8px 24px;
-      border: 2px solid #ddd;
-      background: white;
-      border-radius: 20px;
-      cursor: pointer;
-      transition: all 0.3s;
-      font-size: 14px;
-    }
+        .sort-btn {
+            padding: 8px 24px;
+            border: 2px solid #ddd;
+            background: white;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 14px;
+        }
 
-    .sort-btn:hover {
-      border-color: #1890ff;
-    }
+        .sort-btn:hover {
+            border-color: #1890ff;
+        }
 
-    .sort-btn.active {
-      background: #1890ff;
-      color: white;
-      border-color: #1890ff;
-    }
+        .sort-btn.active {
+            background: #1890ff;
+            color: white;
+            border-color: #1890ff;
+        }
 
-    .proxy-selector {
-      margin-top: 10px;
-      padding: 10px;
-      background: #fff3cd;
-      border-radius: 5px;
-      font-size: 12px;
-    }
+        .proxy-selector {
+            margin-top: 10px;
+            padding: 10px;
+            background: #fff3cd;
+            border-radius: 5px;
+            font-size: 12px;
+        }
 
-    .proxy-selector select {
-      margin-left: 10px;
-      padding: 5px;
-      border-radius: 3px;
-      border: 1px solid #ddd;
-    }
+        .proxy-selector select {
+            margin-left: 10px;
+            padding: 5px;
+            border-radius: 3px;
+            border: 1px solid #ddd;
+        }
 
-    .gallery {
-      max-width: 1200px;
-      margin: 20px auto;
-      padding: 0 20px;
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-      gap: 20px;
-    }
+        .gallery {
+            max-width: 1200px;
+            margin: 20px auto;
+            padding: 0 20px;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px;
+        }
 
-    .gallery-item {
-      background: white;
-      border-radius: 8px;
-      overflow: hidden;
-      cursor: pointer;
-      transition: transform 0.3s, box-shadow 0.3s;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-    }
+        .gallery-item {
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            cursor: pointer;
+            transition: transform 0.3s, box-shadow 0.3s;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
 
-    .gallery-item:hover {
-      transform: translateY(-5px);
-      box-shadow: 0 4px 16px rgba(0,0,0,0.2);
-    }
+        .gallery-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+        }
 
-    .gallery-item img {
-      width: 100%;
-      height: 300px;
-      object-fit: cover;
-      display: block;
-    }
+        .gallery-item img {
+            width: 100%;
+            height: 300px;
+            object-fit: cover;
+            display: block;
+        }
 
-    .gallery-item-info {
-      padding: 12px;
-    }
+        .gallery-item-info {
+            padding: 12px;
+        }
 
-    .gallery-item-title {
-      font-weight: 600;
-      margin-bottom: 5px;
-      color: #333;
-    }
+        .gallery-item-title {
+            font-weight: 600;
+            margin-bottom: 5px;
+            color: #333;
+        }
 
-    .gallery-item-stats {
-      font-size: 12px;
-      color: #666;
-      display: flex;
-      gap: 15px;
-    }
+        .gallery-item-stats {
+            font-size: 12px;
+            color: #666;
+            display: flex;
+            gap: 15px;
+        }
 
-    .loading {
-      text-align: center;
-      padding: 40px;
-      color: #666;
-    }
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+        }
 
-    .error-message {
-      max-width: 1200px;
-      margin: 20px auto;
-      padding: 20px;
-      background: #fff3cd;
-      border: 1px solid #ffc107;
-      border-radius: 5px;
-      color: #856404;
-    }
+        .error-message {
+            max-width: 1200px;
+            margin: 20px auto;
+            padding: 20px;
+            background: #fff3cd;
+            border: 1px solid #ffc107;
+            border-radius: 5px;
+            color: #856404;
+        }
 
-    .modal {
-      display: none;
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background: rgba(0,0,0,0.95);
-      z-index: 1000;
-      justify-content: center;
-      align-items: center;
-    }
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.95);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
 
-    .modal.active {
-      display: flex;
-    }
+        .modal.active {
+            display: flex;
+        }
 
-    .modal-content {
-      position: relative;
-      width: 100%;
-      height: 100%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
+        .modal-content {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
 
-    .modal-image {
-      max-width: 90%;
-      max-height: 90%;
-      object-fit: contain;
-    }
+        .modal-image {
+            max-width: 90%;
+            max-height: 90%;
+            object-fit: contain;
+        }
 
-    .modal-close {
-      position: absolute;
-      top: 20px;
-      right: 20px;
-      width: 40px;
-      height: 40px;
-      background: rgba(255,255,255,0.2);
-      border: none;
-      border-radius: 50%;
-      color: white;
-      font-size: 24px;
-      cursor: pointer;
-      z-index: 1001;
-    }
+        .modal-close {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            width: 40px;
+            height: 40px;
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            border-radius: 50%;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+            z-index: 1001;
+        }
 
-    .modal-nav {
-      position: absolute;
-      top: 50%;
-      transform: translateY(-50%);
-      width: 50px;
-      height: 50px;
-      background: rgba(255,255,255,0.2);
-      border: none;
-      border-radius: 50%;
-      color: white;
-      font-size: 24px;
-      cursor: pointer;
-      z-index: 1001;
-    }
+        .modal-nav {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 50px;
+            height: 50px;
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            border-radius: 50%;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+            z-index: 1001;
+        }
 
-    .modal-nav.prev {
-      left: 20px;
-    }
+        .modal-nav.prev {
+            left: 20px;
+        }
 
-    .modal-nav.next {
-      right: 20px;
-    }
+        .modal-nav.next {
+            right: 20px;
+        }
 
-    .modal-nav:disabled {
-      opacity: 0.3;
-      cursor: not-allowed;
-    }
+        .modal-nav:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+        }
 
-    .modal-info {
-      position: absolute;
-      bottom: 20px;
-      left: 50%;
-      transform: translateX(-50%);
-      color: white;
-      font-size: 14px;
-      background: rgba(0,0,0,0.5);
-      padding: 10px 20px;
-      border-radius: 20px;
-    }
+        .modal-info {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: white;
+            font-size: 14px;
+            background: rgba(0, 0, 0, 0.5);
+            padding: 10px 20px;
+            border-radius: 20px;
+        }
 
-    .load-more {
-      text-align: center;
-      padding: 20px;
-    }
+        .load-more {
+            text-align: center;
+            padding: 20px;
+        }
 
-    .load-more-btn {
-      padding: 10px 30px;
-      background: #1890ff;
-      color: white;
-      border: none;
-      border-radius: 20px;
-      cursor: pointer;
-      font-size: 14px;
-    }
+        .load-more-btn {
+            padding: 10px 30px;
+            background: #1890ff;
+            color: white;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 14px;
+        }
 
-    .load-more-btn:hover {
-      background: #40a9ff;
-    }
+        .load-more-btn:hover {
+            background: #40a9ff;
+        }
 
-    .load-more-btn:disabled {
-      background: #ccc;
-      cursor: not-allowed;
-    }
+        .load-more-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
 
-    .image-loading {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      color: white;
-      font-size: 16px;
-    }
-  </style>
+        .image-loading {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: white;
+            font-size: 16px;
+        }
+    </style>
 </head>
 <body>
-  <div class="header">
+<div class="header">
     <div class="filters">
-      <div class="filter-section">
-        <label class="filter-label">时间筛选</label>
-        <div class="year-slider-container">
-          <div class="year-slider" id="yearSlider"></div>
+        <div class="filter-section">
+            <label class="filter-label">时间筛选</label>
+            <div class="year-slider-container">
+                <div class="year-slider" id="yearSlider"></div>
+            </div>
         </div>
-      </div>
-      <div class="filter-section">
-        <label class="filter-label">排序方式</label>
-        <div class="sort-buttons">
-          <button class="sort-btn" data-sort="sortrank">最新</button>
-          <button class="sort-btn" data-sort="click">热榜</button>
-          <button class="sort-btn" data-sort="stow">书签榜</button>
+        <div class="filter-section">
+            <label class="filter-label">排序方式</label>
+            <div class="sort-buttons">
+                <button class="sort-btn" data-sort="sortrank">最新</button>
+                <button class="sort-btn" data-sort="click">热榜</button>
+                <button class="sort-btn" data-sort="stow">书签榜</button>
+            </div>
         </div>
-      </div>
-      <div class="proxy-selector">
-        <label>代理模式：
-          <select id="proxySelect">
-            <option value="https://api.allorigins.win/raw?url=">AllOrigins (推荐)</option>
-            <option value="https://corsproxy.io/?">CorsProxy</option>
-            <option value="https://cors-anywhere.herokuapp.com/">CORS Anywhere</option>
-            <option value="">直连 (可能失败)</option>
-          </select>
-        </label>
-        <span style="margin-left: 10px; color: #856404;">⚠️ 如遇加载失败请切换代理</span>
-      </div>
+
     </div>
-  </div>
+</div>
 
-  <div id="errorMessage"></div>
-  <div class="gallery" id="gallery"></div>
+<div id="errorMessage"></div>
+<div class="gallery" id="gallery"></div>
 
-  <div class="load-more">
+<div class="load-more">
     <button class="load-more-btn" id="loadMoreBtn">加载更多</button>
-  </div>
+</div>
 
-  <div class="modal" id="modal">
+<div class="modal" id="modal">
     <button class="modal-close" id="modalClose">×</button>
     <button class="modal-nav prev" id="modalPrev">‹</button>
     <button class="modal-nav next" id="modalNext">›</button>
     <div class="modal-content">
-      <div class="image-loading" id="imageLoading">加载中...</div>
-      <img class="modal-image" id="modalImage" src="" alt="" style="display: none;">
-      <div class="modal-info" id="modalInfo"></div>
+        <div class="image-loading" id="imageLoading">加载中...</div>
+        <img class="modal-image" id="modalImage" src="" alt="" style="display: none;">
+        <div class="modal-info" id="modalInfo"></div>
     </div>
-  </div>
+</div>
 
-  <script>
+<script>
     const API_BASE = 'https://rosi.jinyemimi.com/api_beta2_2/api.php';
     const TOKEN = 'bbe1609958bdd8d9dcb651e02cb65de4';
     const TYPEID = '1';
@@ -367,134 +357,133 @@
     let currentImageIndex = 1;
     let maxImageIndex = 1;
 
-    // 代理选择
-    document.getElementById('proxySelect').addEventListener('change', (e) => {
-      proxyPrefix = e.target.value;
-      currentPage = 1;
-      hasMore = true;
-      document.getElementById('gallery').innerHTML = '';
-      document.getElementById('errorMessage').innerHTML = '';
-      loadImages();
-    });
 
     // 初始化年份滑块
     function initYearSlider() {
-      const yearSlider = document.getElementById('yearSlider');
-      for (let year = 2025; year >= 2011; year--) {
-        const btn = document.createElement('button');
-        btn.className = 'year-btn';
-        btn.textContent = year + '年';
-        btn.dataset.year = year;
-        if (year === 2025) btn.classList.add('active');
-        btn.addEventListener('click', () => selectYear(year));
-        yearSlider.appendChild(btn);
-      }
+        const yearSlider = document.getElementById('yearSlider');
+        for (let year = 2025; year >= 2011; year--) {
+            const btn = document.createElement('button');
+            btn.className = 'year-btn';
+            btn.textContent = year + '年';
+            btn.dataset.year = year;
+            if (year === 2025) btn.classList.add('active');
+            btn.addEventListener('click', () => selectYear(year));
+            yearSlider.appendChild(btn);
+        }
     }
 
     // 选择年份
     function selectYear(year) {
-      currentYear = year;
-      currentPage = 1;
-      hasMore = true;
-      document.querySelectorAll('.year-btn').forEach(btn => {
-        btn.classList.toggle('active', parseInt(btn.dataset.year) === year);
-      });
-      document.getElementById('gallery').innerHTML = '';
-      document.getElementById('errorMessage').innerHTML = '';
-      loadImages();
+        currentYear = year;
+        currentPage = 1;
+        hasMore = true;
+        document.querySelectorAll('.year-btn').forEach(btn => {
+            btn.classList.toggle('active', parseInt(btn.dataset.year) === year);
+        });
+        document.getElementById('gallery').innerHTML = '';
+        document.getElementById('errorMessage').innerHTML = '';
+        loadImages();
     }
 
     // 初始化排序按钮
     function initSortButtons() {
-      document.querySelectorAll('.sort-btn').forEach(btn => {
-        btn.addEventListener('click', () => {
-          currentSort = btn.dataset.sort;
-          currentPage = 1;
-          hasMore = true;
-          document.querySelectorAll('.sort-btn').forEach(b => b.classList.remove('active'));
-          btn.classList.add('active');
-          document.getElementById('gallery').innerHTML = '';
-          document.getElementById('errorMessage').innerHTML = '';
-          loadImages();
+        document.querySelectorAll('.sort-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                currentSort = btn.dataset.sort;
+                currentPage = 1;
+                hasMore = true;
+                document.querySelectorAll('.sort-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                document.getElementById('gallery').innerHTML = '';
+                document.getElementById('errorMessage').innerHTML = '';
+                loadImages();
+            });
         });
-      });
-      document.querySelector('.sort-btn[data-sort="sortrank"]').classList.add('active');
+        document.querySelector('.sort-btn[data-sort="sortrank"]').classList.add('active');
     }
 
     // 获取年份时间戳
     function getYearTimestamps(year) {
-      const staTime = Math.floor(new Date(year, 0, 1, 0, 0, 0).getTime() / 1000);
-      const endTime = Math.floor(new Date(year, 11, 31, 23, 59, 59).getTime() / 1000);
-      return { staTime, endTime };
+        const staTime = Math.floor(new Date(year, 0, 1, 0, 0, 0).getTime() / 1000);
+        const endTime = Math.floor(new Date(year, 11, 31, 23, 59, 59).getTime() / 1000);
+        return {staTime, endTime};
     }
 
     // 显示错误信息
     function showError(message) {
-      const errorDiv = document.getElementById('errorMessage');
-      errorDiv.innerHTML = `<div class="error-message">${message}</div>`;
+        const errorDiv = document.getElementById('errorMessage');
+        errorDiv.innerHTML = `<div class="error-message">${message}</div>`;
     }
 
-    // 加载图片列表
+    // 1. 删除代理选择器部分（不再需要）
+    // 删除这段 HTML:
+    /*
+    <div class="proxy-selector">
+      ...
+    </div>
+    */
+
+    // 2. 修改 loadImages 函数
     async function loadImages() {
-      if (isLoading || !hasMore) return;
-      isLoading = true;
-      document.getElementById('loadMoreBtn').disabled = true;
-      document.getElementById('loadMoreBtn').textContent = '加载中...';
+        if (isLoading || !hasMore) return;
+        isLoading = true;
+        document.getElementById('loadMoreBtn').disabled = true;
+        document.getElementById('loadMoreBtn').textContent = '加载中...';
 
-      try {
-        const { staTime, endTime } = getYearTimestamps(currentYear);
-        const apiUrl = `${API_BASE}?controller=shequ&action=queryArchiveList&page=${currentPage}&token=${TOKEN}&sta_time=${staTime}&end_time=${endTime}&typeid=${TYPEID}&orderby=${currentSort}`;
-const url = apiUrl; // GET请求直连，不使用代理
-        
-        console.log('请求URL:', url);
-        
-        const response = await fetch(url, {
-          method: 'GET',
-          headers: {
-            'Accept': 'application/json'
-          }
-        });
+        try {
+            const {staTime, endTime} = getYearTimestamps(currentYear);
+            const apiUrl = `${API_BASE}?controller=shequ&action=queryArchiveList&page=${currentPage}&token=${TOKEN}&sta_time=${staTime}&end_time=${endTime}&typeid=${TYPEID}&orderby=${currentSort}`;
 
-        if (!response.ok) {
-          throw new Error(`HTTP错误: ${response.status}`);
+            // 使用 Vercel 代理
+            const proxyUrl = `/api/proxy?url=${encodeURIComponent(apiUrl)}`;
+
+            const response = await fetch(proxyUrl, {
+                method: 'GET',
+                headers: {
+                    'Accept': 'application/json'
+                }
+            });
+
+            if (!response.ok) {
+                throw new Error(`HTTP错误: ${response.status}`);
+            }
+
+            const data = await response.json();
+
+            if (data.error && data.error.state === 0 && data.entries_s && data.entries_s.length > 0) {
+                renderGallery(data.entries_s);
+                currentPage++;
+                hasMore = currentPage <= data.total_page;
+                document.getElementById('errorMessage').innerHTML = '';
+            } else {
+                hasMore = false;
+                if (currentPage === 1) {
+                    showError('没有找到图片数据');
+                }
+            }
+        } catch (error) {
+            console.error('加载失败:', error);
+            showError(`加载失败: ${error.message}`);
+            hasMore = false;
+        } finally {
+            isLoading = false;
+            document.getElementById('loadMoreBtn').disabled = !hasMore;
+            document.getElementById('loadMoreBtn').textContent = hasMore ? '加载更多' : '没有更多了';
         }
-
-        const data = await response.json();
-        console.log('返回数据:', data);
-        
-        if (data.error && data.error.state === 0 && data.entries_s && data.entries_s.length > 0) {
-          renderGallery(data.entries_s);
-          currentPage++;
-          hasMore = currentPage <= data.total_page;
-          document.getElementById('errorMessage').innerHTML = '';
-        } else {
-          hasMore = false;
-          if (currentPage === 1) {
-            showError('没有找到图片数据，请尝试切换代理或选择其他年份');
-          }
-        }
-      } catch (error) {
-        console.error('加载失败:', error);
-        showError(`加载失败: ${error.message}<br>请尝试切换上方的代理模式`);
-        hasMore = false;
-      } finally {
-        isLoading = false;
-        document.getElementById('loadMoreBtn').disabled = !hasMore;
-        document.getElementById('loadMoreBtn').textContent = hasMore ? '加载更多' : '没有更多了';
-      }
     }
 
-    // 渲染图片列表
-async function renderGallery(items) {
-  const gallery = document.getElementById('gallery');
-  
-  for (const item of items) {
-    const div = document.createElement('div');
-    div.className = 'gallery-item';
-    
-    // 先显示占位图
-    div.innerHTML = `
-      <img src="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22250%22 height=%22300%22%3E%3Crect fill=%22%23f0f0f0%22 width=%22250%22 height=%22300%22/%3E%3Ctext x=%2250%25%22 y=%2250%25%22 text-anchor=%22middle%22 dy=%22.3em%22 fill=%22%23999%22 font-size=%2214%22%3E加载中...%3C/text%3E%3C/svg%3E" alt="${item.title}">
+    // 3. 修改 renderGallery 函数中的图片 URL
+    function renderGallery(items) {
+        const gallery = document.getElementById('gallery');
+        items.forEach(item => {
+            const div = document.createElement('div');
+            div.className = 'gallery-item';
+
+            // 使用图片代理
+            const imgUrl = `/api/image-proxy?url=${encodeURIComponent(item.litpic)}`;
+
+            div.innerHTML = `
+      <img src="${imgUrl}" alt="${item.title}" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22250%22 height=%22300%22%3E%3Crect fill=%22%23ddd%22 width=%22250%22 height=%22300%22/%3E%3Ctext x=%2250%25%22 y=%2250%25%22 text-anchor=%22middle%22 dy=%22.3em%22 fill=%22%23999%22 font-size=%2214%22%3E图片加载失败%3C/text%3E%3C/svg%3E'">
       <div class="gallery-item-info">
         <div class="gallery-item-title">${item.title}</div>
         <div class="gallery-item-stats">
@@ -503,187 +492,125 @@ async function renderGallery(items) {
         </div>
       </div>
     `;
-    
-    div.addEventListener('click', () => openModal(item));
-    gallery.appendChild(div);
-    
-    // 异步加载封面图
-    const img = div.querySelector('img');
-    loadCoverImage(item.litpic, img);
-  }
-}
-
-	  // 加载封面图（使用 Blob URL）
-async function loadCoverImage(imageUrl, imgElement) {
-  try {
-    const proxyUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(imageUrl)}`;
-    const response = await fetch(proxyUrl);
-    
-    if (!response.ok) {
-      throw new Error('图片加载失败');
+            div.addEventListener('click', () => openModal(item));
+            gallery.appendChild(div);
+        });
     }
-    
-    const blob = await response.blob();
-    const blobUrl = URL.createObjectURL(blob);
-    
-    imgElement.onload = function() {
-      // 图片加载成功后可以释放 Blob URL（可选）
-      // URL.revokeObjectURL(blobUrl);
-    };
-    
-    imgElement.onerror = function() {
-      imgElement.src = 'data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22250%22 height=%22300%22%3E%3Crect fill=%22%23ddd%22 width=%22250%22 height=%22300%22/%3E%3Ctext x=%2250%25%22 y=%2250%25%22 text-anchor=%22middle%22 dy=%22.3em%22 fill=%22%23999%22 font-size=%2214%22%3E图片加载失败%3C/text%3E%3C/svg%3E';
-    };
-    
-    imgElement.src = blobUrl;
-    
-  } catch (error) {
-    console.error('封面图加载失败:', error);
-    imgElement.src = 'data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22250%22 height=%22300%22%3E%3Crect fill=%22%23ddd%22 width=%22250%22 height=%22300%22/%3E%3Ctext x=%2250%25%22 y=%2250%25%22 text-anchor=%22middle%22 dy=%22.3em%22 fill=%22%23999%22 font-size=%2214%22%3E图片加载失败%3C/text%3E%3C/svg%3E';
-  }
-}
 
-    // 打开图片查看模态框
+    // 4. 修改 openModal 函数
     async function openModal(item) {
-      currentViewingItem = item;
-      currentImageIndex = 1;
-      maxImageIndex = 1;
-      
-      // 获取详细信息
-		try {
-		  const postData = JSON.stringify({
-			controller: 'archives',
-			action: 'getArchiveD',
-			aid: item.id,
-			token: TOKEN
-		  });
-		  
-		  // POST请求需要使用代理
-const url = (proxyPrefix ? proxyPrefix : '') + encodeURIComponent(API_BASE);
-		  
-		  const response = await fetch(url, {
-			method: 'POST',
-			headers: {
-			  'Content-Type': 'application/json; charset=UTF-8',
-			  'Accept': 'application/json',
-			  'User-Agent': 'okhttp/4.9.1'
-			},
-			body: postData
-		  });
-		  
-		  const data = await response.json();
-		  if (data.error && data.error.state === 0) {
-			currentViewingItem = { ...item, ...data };
-		  }
-		} catch (error) {
-		  console.error('获取详情失败:', error);
-		}
+        currentViewingItem = item;
+        currentImageIndex = 1;
+        maxImageIndex = 1;
 
+        try {
+            const postData = JSON.stringify({
+                controller: 'archives',
+                action: 'getArchiveD',
+                aid: item.id,
+                token: TOKEN
+            });
 
-      document.getElementById('modal').classList.add('active');
-      loadModalImage();
+            // 使用 Vercel 代理
+            const response = await fetch('/api/proxy', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    url: API_BASE,
+                    data: postData
+                })
+            });
+
+            const data = await response.json();
+            if (data.error && data.error.state === 0) {
+                currentViewingItem = {...item, ...data};
+            }
+        } catch (error) {
+            console.error('获取详情失败:', error);
+        }
+
+        document.getElementById('modal').classList.add('active');
+        loadModalImage();
     }
 
-   // 可选的代理服务列表
-const proxyServices = [
-  'https://api.codetabs.com/v1/proxy?quest='
-];
+    // 5. 修改 loadModalImage 函数
+    function loadModalImage() {
+        if (!currentViewingItem || !currentViewingItem.shorttitle) {
+            console.error('缺少 shorttitle 字段');
+            alert('图片信息不完整');
+            closeModal();
+            return;
+        }
 
-let currentProxyIndex = 0;
+        const imageNum = String(currentImageIndex).padStart(3, '0');
+        const imageUrl = `http://rs.jinyemimi.com/jpg/${currentViewingItem.shorttitle}/${imageNum}.rosi`;
 
-function loadModalImage() {
-  if (!currentViewingItem) return;
-  
-  if (!currentViewingItem.shorttitle) {
-    console.error('缺少 shorttitle 字段:', currentViewingItem);
-    alert('图片信息不完整,无法加载');
-    closeModal();
-    return;
-  }
-  
-  const imageNum = String(currentImageIndex).padStart(3, '0');
-  const imageUrl = `http://rs.jinyemimi.com/jpg/${currentViewingItem.shorttitle}/${imageNum}.rosi`;
-  
-  // 使用当前代理
-  const proxiedUrl = proxyServices[currentProxyIndex] + encodeURIComponent(imageUrl);
-  
-  console.log('加载图片URL:', proxiedUrl);
-  
-  const modalImage = document.getElementById('modalImage');
-  const imageLoading = document.getElementById('imageLoading');
-  
-  modalImage.style.display = 'none';
-  imageLoading.style.display = 'block';
-  
-  document.getElementById('modalPrev').disabled = currentImageIndex <= 1;
-  
-  modalImage.onload = function() {
-    console.log('图片加载成功');
-    imageLoading.style.display = 'none';
-    modalImage.style.display = 'block';
-    maxImageIndex = Math.max(maxImageIndex, currentImageIndex);
-  };
-  
-  modalImage.onerror = function() {
-    console.error('图片加载失败:', proxiedUrl);
-    imageLoading.style.display = 'none';
-    
-    // 尝试切换到下一个代理
-    if (currentProxyIndex < proxyServices.length - 1) {
-      currentProxyIndex++;
-      console.log('切换到代理:', proxyServices[currentProxyIndex]);
-      loadModalImage();
-      return;
+        // 使用图片代理
+        const proxiedUrl = `/api/image-proxy?url=${encodeURIComponent(imageUrl)}`;
+
+        const modalImage = document.getElementById('modalImage');
+        const imageLoading = document.getElementById('imageLoading');
+
+        modalImage.style.display = 'none';
+        imageLoading.style.display = 'block';
+
+        document.getElementById('modalPrev').disabled = currentImageIndex <= 1;
+
+        modalImage.onload = function () {
+            imageLoading.style.display = 'none';
+            modalImage.style.display = 'block';
+            maxImageIndex = Math.max(maxImageIndex, currentImageIndex);
+        };
+
+        modalImage.onerror = function () {
+            imageLoading.style.display = 'none';
+            if (currentImageIndex > maxImageIndex) {
+                alert('已经是最后一张图片了');
+                currentImageIndex = maxImageIndex;
+                loadModalImage();
+            } else {
+                modalImage.style.display = 'block';
+                modalImage.src = 'data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22800%22 height=%22600%22%3E%3Crect fill=%22%23333%22 width=%22800%22 height=%22600%22/%3E%3Ctext x=%2250%25%22 y=%2250%25%22 text-anchor=%22middle%22 dy=%22.3em%22 fill=%22%23fff%22 font-size=%2224%22%3E图片加载失败%3C/text%3E%3C/svg%3E';
+            }
+        };
+
+        modalImage.src = proxiedUrl;
+        document.getElementById('modalInfo').textContent =
+            `${currentViewingItem.title} - 第 ${currentImageIndex} 张`;
+
+        // 预加载下一张
+        setTimeout(() => {
+            const nextImageNum = String(currentImageIndex + 1).padStart(3, '0');
+            const nextImageUrl = `http://rs.jinyemimi.com/jpg/${currentViewingItem.shorttitle}/${nextImageNum}.rosi`;
+            const nextProxiedUrl = `/api/image-proxy?url=${encodeURIComponent(nextImageUrl)}`;
+            const preloadImg = new Image();
+            preloadImg.src = nextProxiedUrl;
+        }, 1000);
     }
-    
-    // 所有代理都失败了
-    if (currentImageIndex > maxImageIndex) {
-      alert('已经是最后一张图片了');
-      currentImageIndex = maxImageIndex;
-      currentProxyIndex = 0; // 重置代理索引
-      loadModalImage();
-    } else {
-      modalImage.style.display = 'block';
-      modalImage.src = 'data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22800%22 height=%22600%22%3E%3Crect fill=%22%23333%22 width=%22800%22 height=%22600%22/%3E%3Ctext x=%2250%25%22 y=%2250%25%22 text-anchor=%22middle%22 dy=%22.3em%22 fill=%22%23fff%22 font-size=%2224%22%3E图片加载失败%3C/text%3E%3C/svg%3E';
-    }
-  };
-  
-  modalImage.src = proxiedUrl;
-  
-  document.getElementById('modalInfo').textContent = 
-    `${currentViewingItem.title} - 第 ${currentImageIndex} 张`;
-
-  // 预加载下一张
-  setTimeout(() => {
-    const nextImageNum = String(currentImageIndex + 1).padStart(3, '0');
-    const nextImageUrl = `http://rs.jinyemimi.com/jpg/${currentViewingItem.shorttitle}/${nextImageNum}.rosi`;
-    const nextProxiedUrl = proxyServices[currentProxyIndex] + encodeURIComponent(nextImageUrl);
-    const preloadImg = new Image();
-    preloadImg.src = nextProxiedUrl;
-  }, 1000);
-}
 
 
     // 关闭模态框
     function closeModal() {
-      document.getElementById('modal').classList.remove('active');
-      currentViewingItem = null;
-      currentImageIndex = 1;
-      maxImageIndex = 1;
+        document.getElementById('modal').classList.remove('active');
+        currentViewingItem = null;
+        currentImageIndex = 1;
+        maxImageIndex = 1;
     }
 
     // 上一张图片
     function prevImage() {
-      if (currentImageIndex > 1) {
-        currentImageIndex--;
-        loadModalImage();
-      }
+        if (currentImageIndex > 1) {
+            currentImageIndex--;
+            loadModalImage();
+        }
     }
 
     // 下一张图片
     function nextImage() {
-      currentImageIndex++;
-      loadModalImage();
+        currentImageIndex++;
+        loadModalImage();
     }
 
     // 事件监听
@@ -694,35 +621,35 @@ function loadModalImage() {
 
     // 键盘导航
     document.addEventListener('keydown', (e) => {
-      if (document.getElementById('modal').classList.contains('active')) {
-        if (e.key === 'Escape') closeModal();
-        if (e.key === 'ArrowLeft') prevImage();
-        if (e.key === 'ArrowRight') nextImage();
-      }
+        if (document.getElementById('modal').classList.contains('active')) {
+            if (e.key === 'Escape') closeModal();
+            if (e.key === 'ArrowLeft') prevImage();
+            if (e.key === 'ArrowRight') nextImage();
+        }
     });
 
     // 触摸滑动支持
     let touchStartX = 0;
     let touchEndX = 0;
-    
+
     document.getElementById('modal').addEventListener('touchstart', (e) => {
-      touchStartX = e.changedTouches[0].screenX;
+        touchStartX = e.changedTouches[0].screenX;
     });
 
     document.getElementById('modal').addEventListener('touchend', (e) => {
-      touchEndX = e.changedTouches[0].screenX;
-      handleSwipe();
+        touchEndX = e.changedTouches[0].screenX;
+        handleSwipe();
     });
 
     function handleSwipe() {
-      if (touchEndX < touchStartX - 50) nextImage();
-      if (touchEndX > touchStartX + 50) prevImage();
+        if (touchEndX < touchStartX - 50) nextImage();
+        if (touchEndX > touchStartX + 50) prevImage();
     }
 
     // 初始化
     initYearSlider();
     initSortButtons();
     loadImages();
-  </script>
+</script>
 </body>
 </html>
